@@ -1,0 +1,67 @@
+/* ==========================================================================
+   PAYBRIDGE BÉNIN - OPERATOR BRAND CARDS (css/operators.css)
+   ========================================================================== */
+
+:root {
+    --color-mtn: #FFCC00;
+    --color-moov: #005CA9;
+    --color-celtiis: #6F2C91;
+    --color-wave: #1DC4FF;
+}
+
+/* Selector Grid */
+.operator-selector-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.6rem;
+    margin-bottom: 0.8rem;
+}
+
+@media (max-width: 550px) {
+    .operator-selector-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.op-select-card {
+    background: #F8FAFC;
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 0.4rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.2s ease;
+}
+
+.op-select-card:hover {
+    border-color: var(--primary-blue);
+    transform: translateY(-2px);
+}
+
+.op-select-card.active {
+    border-color: var(--primary-blue);
+    background: #EFF6FF;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+}
+
+/* Logos Badges */
+.op-logo {
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+    display: inline-block;
+}
+
+.op-logo.mtn { background: var(--color-mtn); color: #000000; }
+.op-logo.moov { background: var(--color-moov); color: #FFFFFF; }
+.op-logo.celtiis { background: var(--color-celtiis); color: #FFFFFF; }
+.op-logo.wave { background: var(--color-wave); color: #FFFFFF; }
+
+.op-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}

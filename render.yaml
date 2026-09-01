@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: paybridge-benin
+    env: node
+    region: frankfurt
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production

@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayBridge Bénin - Transferts Inter-Réseaux Simplifiés</title>
+    <meta name="description" content="Envoyez de l'argent instantanément entre MTN Mobile Money, Moov Money, Celtiis Cash et Wave au Bénin.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- CSS Modules -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/operators.css">
+</head>
+<body class="light-theme">
+
+    <!-- BARRE DE NAVIGATION ÉPURÉE -->
+    <header class="navbar">
+        <div class="nav-container">
+            <!-- Logo Vectoriel Professionnel -->
+            <div class="nav-brand" onclick="switchTab('transfer')" style="cursor: pointer;">
+                <div class="logo-box-svg" style="display: flex; align-items: center; justify-content: center;">
+                    <svg width="38" height="38" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect width="36" height="36" rx="10" fill="url(#pb-grad-bg)"/>
+                      <path d="M9 22C9 16.4772 13.4772 12 19 12H26" stroke="#FFFFFF" stroke-width="2.8" stroke-linecap="round"/>
+                      <path d="M25 15L28.5 12L25 9.5" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M27 14C27 19.5228 22.5228 24 17 24H10" stroke="#FFCC00" stroke-width="2.8" stroke-linecap="round"/>
+                      <path d="M11 21.5L7.5 24L11 26.5" stroke="#FFCC00" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                      <circle cx="19" cy="12" r="2" fill="#10B981"/>
+                      <circle cx="17" cy="24" r="2" fill="#10B981"/>
+                      <defs>
+                        <linearGradient id="pb-grad-bg" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                          <stop stop-color="#1E3A8A"/>
+                          <stop offset="1" stop-color="#2563EB"/>
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <span class="brand-name">PayBridge</span>
+                    <span class="brand-sub" style="background:#DBEAFE; color:#1E40AF;">AFRIQUE</span>
+                </div>
+            </div>
+
+            <!-- Tabs de Navigation Publics -->
+            <nav class="nav-menu">
+                <button class="nav-link active" id="nav-home" onclick="switchTab('home')">
+                    <i class="fa-solid fa-house"></i> Accueil
+                </button>
+                <button class="nav-link" id="nav-transfer" onclick="switchTab('transfer')">
+                    <i class="fa-solid fa-paper-plane"></i> Envoyer
+                </button>
+                <button class="nav-link" id="nav-pricing" onclick="switchTab('pricing')">
+                    <i class="fa-solid fa-tags"></i> Tarifs & Frais
+                </button>
+                <!-- Onglet Mes Reçus (Réservé uniquement aux utilisateurs connectés) -->
+                <button class="nav-link nav-user-restricted" id="nav-history" onclick="switchTab('history')" style="display: none;">
+                    <i class="fa-solid fa-receipt"></i> Mes Reçus
+                </button>
+                <button class="nav-link" id="nav-faq" onclick="switchTab('faq')">
+                    <i class="fa-solid fa-circle-question"></i> FAQ & Aide
+                </button>
+                <!-- Admin Tab (Masqué par défaut, affiché uniquement pour les comptes Administrateurs) -->
+                <button class="nav-link nav-admin-restricted" id="nav-admin" onclick="switchTab('admin')" style="display: none;">
+                    <i class="fa-solid fa-shield-halved text-warning"></i> Administration
+                </button>
+            </nav>
+
+            <!-- Profil / Connexion / Thème / Notifications -->
+            <div class="nav-user">
+                <!-- Bouton Centre de Notifications SMS -->
+                <button class="nav-notif-btn" id="notif-bell-btn" onclick="SMSNotifications.toggleDrawer()" title="Centre de Notifications SMS / Push">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="notif-badge-counter" id="notif-bell-badge" style="display: none;">0</span>
+                </button>
+
+                <!-- Theme Switcher Button (Sombre / Clair) -->
+                <button class="btn-theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" title="Basculer entre Mode Sombre et Mode Clair">
+                    <i class="fa-solid fa-moon" id="theme-icon"></i>
+                    <span id="theme-label" class="theme-btn-label">Sombre</span>
+                </button>
+
+                <!-- User Badge displayed only when logged in -->
+                <div class="user-badge" id="user-badge-header" style="display: none;">
+                    <span class="user-avatar" id="hdr-avatar">U</span>
+                    <span class="user-name" id="hdr-username">Utilisateur</span>
+                    <button class="btn-logout-icon" onclick="handleLogout()" title="Se déconnecter"><i class="fa-solid fa-power-off"></i></button>
+                </div>
+
+                <!-- Auth Buttons displayed when logged out -->
+                <div class="auth-btn-group" id="auth-buttons-header">
+                    <button class="btn-auth-action btn-login" onclick="openAuthModal('login')">
+                        <i class="fa-solid fa-right-to-bracket"></i> Connexion
+                    </button>
+                    <button class="btn-auth-action btn-signup" onclick="openAuthModal('register')">
+                        <i class="fa-solid fa-user-plus"></i> Inscription
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- TOAST NOTIFICATIONS -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="app-main">
+
+        <!-- ===================================================================
+             PAGE 1 : PAGE D'ACCUEIL / LANDING PAGE (HERO & METRICS & PRESENTATION)
+             =================================================================== -->
+        <section id="page-home" class="page-section active">
+            
+            <!-- Hero Header avec Calculateur Instantané Flottant (Style TapTap Send / LemFi) -->
+            <div class="taptap-hero-wrapper">
+                <div class="taptap-hero-content">
+                    <div class="hero-pill-badge">
+                        <span class="pulse-green"></span>
+                        <span>1er Réseau d'Interopérabilité Mobile Money en Afrique de l'Ouest 🌍</span>
+                    </div>
+                    <h1 class="hero-title">Envoyez de l'argent instantanément <span class="gradient-text">dans toute l'Afrique de l'Ouest</span></h1>
+                    <p class="hero-subtitle">
+                        Transférez sans tracas entre <strong>MTN MoMo</strong>, <strong>Orange Money</strong>, <strong>Moov Money</strong>, <strong>Wave Afrique</strong>, <strong>Celtiis Cash</strong> et <strong>TMoney</strong> (Bénin 🇧🇯, Togo 🇹🇬, Côte d'Ivoire 🇨🇮, Sénégal 🇸🇳, Burkina 🇧🇫, Mali 🇲🇱).
+                    </p>
+                    
+                    <div style="display: flex; gap: 1.2rem; flex-wrap: wrap; margin-top: 1.5rem; margin-bottom: 1.5rem;" class="hero-features-mini">
+                        <span style="font-size: 0.88rem; font-weight: 700; color: var(--text-primary);"><i class="fa-solid fa-bolt text-warning"></i> Transfert &lt; 3 secondes</span>
+                        <span style="font-size: 0.88rem; font-weight: 700; color: var(--text-primary);"><i class="fa-solid fa-globe text-primary"></i> 7 Pays UEMOA</span>
+                        <span style="font-size: 0.88rem; font-weight: 700; color: var(--text-primary);"><i class="fa-solid fa-shield-halved text-success"></i> Reçu SMS Officiel</span>
+                        <span style="font-size: 0.88rem; font-weight: 700; color: var(--text-primary);"><i class="fa-solid fa-hand-holding-dollar text-primary"></i> Frais 1.0% fixe</span>
+                    </div>
+
+                    <!-- Carte Jeune Professionnel & Victoire Transfert Réussi -->
+                    <div style="margin-top: 1.5rem;" class="young-pro-hero-card">
+                        <div class="young-pro-header">
+                            <div class="young-pro-avatar">KS</div>
+                            <div class="young-pro-info">
+                                <strong class="young-pro-name">Koffi SOSSOU <i class="fa-solid fa-circle-check text-primary"></i></strong>
+                                <span class="young-pro-title">Entrepreneur Tech • Cotonou 🇧🇯</span>
+                            </div>
+                            <span class="young-pro-badge"><i class="fa-solid fa-bolt text-warning"></i> Envoi Réussi</span>
+                        </div>
+
+                        <div class="young-pro-tx-box">
+                            <div class="pro-tx-amount">+ 150 000 FCFA</div>
+                            <p class="pro-tx-note">"Transféré en 2.4s de mon compte MTN MoMo vers Orange Money Sénégal sans me déplacer !"</p>
+                            <div class="pro-tx-meta">
+                                <span><i class="fa-solid fa-clock text-success"></i> Il y a 3 minutes</span>
+                                <span class="pro-fee-tag">Frais : 1 500 FCFA (1%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Floating Instant Calculator Card -->
+                <div class="taptap-calc-card">
+                    <div class="calc-card-header">
+                        <h3><i class="fa-solid fa-calculator text-primary"></i> Calculateur Afrique de l'Ouest</h3>
+                        <span class="live-status-badge"><span class="pulse-green"></span> En direct</span>
+                    </div>
+
+                    <div class="calc-input-block">
+                        <label>Vous envoyez depuis (Réseau Expéditeur)</label>
+                        <div class="calc-select-row">
+                            <select id="hero-src-net" onchange="updateHeroCalc()" class="calc-net-select">
+                                <option value="mtn">🟡 MTN MoMo (🇧🇯 🇨🇮)</option>
+                                <option value="orange">🟧 Orange Money (🇨🇮 🇸🇳 🇧🇫 🇲🇱)</option>
+                                <option value="moov">🔵 Moov Money (🇧🇯 🇹🇬 🇨🇮 🇧🇫)</option>
+                                <option value="wave">🔷 Wave Afrique (🇸🇳 🇨🇮 🇧🇯)</option>
+                                <option value="celtiis">🟣 Celtiis Cash (🇧🇯)</option>
+                                <option value="tmoney">🟢 TMoney Togocom (🇹🇬)</option>
+                            </select>
+                            <div class="calc-amount-input-box">
+                                <input type="number" id="hero-amount-input" value="10000" min="500" max="2000000" oninput="updateHeroCalc()" class="calc-amount-field">
+                                <span class="currency-tag">FCFA</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="calc-swap-row">
+                        <button type="button" class="btn-swap-hero" onclick="swapHeroNets()" title="Inverser les réseaux">
+                            <i class="fa-solid fa-arrow-down-up-lock"></i>
+                        </button>
+                        <div class="fee-chip">
+                            <span>Frais d'interopérabilité (1%) : <strong id="hero-disp-fee">100 FCFA</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="calc-input-block">
+                        <label>Le destinataire reçoit sur (Réseau Destinataire)</label>
+                        <div class="calc-select-row">
+                            <select id="hero-dst-net" onchange="updateHeroCalc()" class="calc-net-select">
+                                <option value="orange">🟧 Orange Money (🇨🇮 🇸🇳 🇧🇫 🇲🇱)</option>
+                                <option value="mtn">🟡 MTN MoMo (🇧🇯 🇨🇮)</option>
+                                <option value="moov">🔵 Moov Money (🇧🇯 🇹🇬 🇨🇮 🇧🇫)</option>
+                                <option value="wave">🔷 Wave Afrique (🇸🇳 🇨🇮 🇧🇯)</option>
+                                <option value="celtiis">🟣 Celtiis Cash (🇧🇯)</option>
+                                <option value="tmoney">🟢 TMoney Togocom (🇹🇬)</option>
+                            </select>
+                            <div class="calc-net-result-box">
+                                <span id="hero-disp-net" class="calc-net-value">9 900</span>
+                                <span class="currency-tag">FCFA Net</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-hero-submit-calc" onclick="proceedToTransferFromHero()">
+                        <i class="fa-solid fa-paper-plane"></i> Transférer <span id="hero-btn-amount">10 000 FCFA</span> Maintenant
+                    </button>
+
+                    <div class="calc-footer-trust">
+                        <i class="fa-solid fa-lock text-success"></i>
+                        <span>Transaction chiffrée SSL 256-bit aux normes BCEAO & CENTIF.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bandes de Statistiques & Garanties -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon"><i class="fa-solid fa-bolt text-warning"></i></div>
+                    <div class="metric-value">&lt; 3 Sec</div>
+                    <div class="metric-label">Transfert Instantané</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon"><i class="fa-solid fa-shield-halved text-primary"></i></div>
+                    <div class="metric-value">100%</div>
+                    <div class="metric-label">Conformité SSL & BCEAO</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon"><i class="fa-solid fa-mobile-screen-button text-success"></i></div>
+                    <div class="metric-value">6 Réseaux</div>
+                    <div class="metric-label">MTN, Orange, Moov, Wave, Celtiis, TMoney</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon"><i class="fa-solid fa-hand-holding-dollar text-primary"></i></div>
+                    <div class="metric-value">1.0%</div>
+                    <div class="metric-label">Frais Fixes Transparents</div>
+                </div>
+            </div>
+
+            <!-- Explication en 3 Étapes avec Images -->
+            <div class="section-explain">
+                <div class="explain-header">
+                    <span class="guide-badge"><i class="fa-solid fa-lightbulb text-warning"></i> PROCESSUS SIMPLE</span>
+                    <h2>Comment effectuer un transfert inter-réseaux ?</h2>
+                    <p>Un processus fluide et sécurisé en 3 étapes guidées</p>
+                </div>
+                
+                <div class="explain-grid">
+                    <div class="explain-card">
+                        <div class="explain-img-box">
+                            <img src="assets/step1.png" alt="Choix des réseaux Mobile Money au Bénin">
+                            <span class="step-badge">1</span>
+                        </div>
+                        <div class="explain-body">
+                            <h3>1. Choisissez les Réseaux</h3>
+                            <p>Sélectionnez l'opérateur d'origine (MTN, Moov, Celtiis, Wave) et saisissez les numéros au Bénin (+229).</p>
+                        </div>
+                    </div>
+
+                    <div class="explain-card">
+                        <div class="explain-img-box">
+                            <img src="assets/step2.png" alt="Saisie du montant en FCFA">
+                            <span class="step-badge">2</span>
+                        </div>
+                        <div class="explain-body">
+                            <h3>2. Saisissez le Montant</h3>
+                            <p>Indiquez le montant en FCFA. Nos frais fixes de 1.0% s'affichent automatiquement en temps réel.</p>
+                        </div>
+                    </div>
+
+                    <div class="explain-card">
+                        <div class="explain-img-box">
+                            <img src="assets/step3.png" alt="Validation instantanée par Code PIN">
+                            <span class="step-badge">3</span>
+                        </div>
+                        <div class="explain-body">
+                            <h3>3. Validez par Code PIN</h3>
+                            <p>Confirmez votre opération. Le destinataire reçoit son argent en moins de 3 secondes avec un reçu SMS officiel.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Sécurité & Conformité Régionale avec Composant Vectoriel Réel (0% IA) -->
+            <div class="security-showcase-grid">
+                <div>
+                    <div class="real-vector-security-card">
+                        <div class="sec-badge-icon">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <h3>Certificat de Sécurité UEMOA</h3>
+                        <div class="sec-cert-list">
+                            <div class="sec-cert-item">
+                                <i class="fa-solid fa-check-double text-success"></i>
+                                <span>Chiffrement bancaire SSL 256-bit</span>
+                            </div>
+                            <div class="sec-cert-item">
+                                <i class="fa-solid fa-check-double text-success"></i>
+                                <span>Conformité Réglementaire BCEAO</span>
+                            </div>
+                            <div class="sec-cert-item">
+                                <i class="fa-solid fa-check-double text-success"></i>
+                                <span>Protection CENTIF Afrique de l'Ouest</span>
+                            </div>
+                            <div class="sec-cert-item">
+                                <i class="fa-solid fa-check-double text-success"></i>
+                                <span>Reçu officiel SMS instantané</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <span class="guide-badge" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border-color: rgba(16, 185, 129, 0.3);">
+                        <i class="fa-solid fa-shield-halved"></i> SÉCURITÉ MAXIMALE UEMOA
+                    </span>
+                    <h2 style="font-size: 1.8rem; font-weight: 900; margin: 0.8rem 0 1rem; color: #FFFFFF;">Infrastructure FinTech 100% Sécurisée & Régulée</h2>
+                    <p style="color: #94A3B8; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;">
+                        PayBridge garantit l'intégrité de vos fonds grâce à un chiffrement bancaire 256-bit de pointe, conforme aux exigences de la BCEAO et de la CENTIF dans tous les pays de l'Afrique de l'Ouest.
+                    </p>
+                    
+                    <ul style="list-style: none; padding: 0; margin: 0 0 1.8rem; display: flex; flex-direction: column; gap: 0.8rem; font-size: 0.9rem; color: #E2E8F0;">
+                        <li><i class="fa-solid fa-circle-check text-success" style="margin-right: 0.5rem;"></i> Confirmation par Code PIN secret à 4 chiffres</li>
+                        <li><i class="fa-solid fa-circle-check text-success" style="margin-right: 0.5rem;"></i> Notification & Reçu SMS officiel immédiat</li>
+                        <li><i class="fa-solid fa-circle-check text-success" style="margin-right: 0.5rem;"></i> Protection anti-brute force et rate limiting activés</li>
+                    </ul>
+
+                    <button type="button" class="btn-hero-primary" onclick="switchTab('transfer')" style="padding: 0.85rem 1.6rem;">
+                        <i class="fa-solid fa-paper-plane"></i> Réaliser un Transfert Sécurisé
+                    </button>
+                </div>
+            </div>
+
+            <!-- Section Avis Clients & Réputation -->
+            <div style="margin-top: 4rem; text-align: center;">
+                <div class="explain-header">
+                    <span class="guide-badge"><i class="fa-solid fa-star text-warning"></i> AVIS CLIENTS</span>
+                    <h2>Ce que disent nos utilisateurs au Bénin</h2>
+                    <p>Des milliers d'utilisateurs font confiance à PayBridge au quotidien pour leurs échanges d'argent</p>
+                </div>
+                <div class="testimonials-grid">
+                    <div class="testimonial-card">
+                        <p style="color:var(--text-secondary); font-size:0.92rem; font-style:italic;">"Super rapide ! J'ai pu transférer de mon compte MTN vers le compte Celtiis de mon frère en moins de 5 secondes sans me déplacer."</p>
+                        <div class="testimonial-user">
+                            <div class="testimonial-avatar">KS</div>
+                            <div>
+                                <strong style="display:block; font-size:0.9rem;">Koffi SOSSOU</strong>
+                                <span style="font-size:0.78rem; color:var(--text-secondary);">Cotonou, Bénin</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <p style="color:var(--text-secondary); font-size:0.92rem; font-style:italic;">"PayBridge nous évite enfin les frais exorbitants et les tracasseries d'incompatibilité entre Moov et Wave. Reçu SMS immédiat !"</p>
+                        <div class="testimonial-user">
+                            <div class="testimonial-avatar" style="background:linear-gradient(135deg, #10B981, #059669);">AD</div>
+                            <div>
+                                <strong style="display:block; font-size:0.9rem;">Amina DOSSOU</strong>
+                                <span style="font-size:0.78rem; color:var(--text-secondary);">Porto-Novo, Bénin</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <p style="color:var(--text-secondary); font-size:0.92rem; font-style:italic;">"Les frais de 1% sont ultra compétitifs et la plateforme est d'une grande clarté. L'Espace est intuitif et sécurisé."</p>
+                        <div class="testimonial-user">
+                            <div class="testimonial-avatar" style="background:linear-gradient(135deg, #F59E0B, #D97706);">EB</div>
+                            <div>
+                                <strong style="display:block; font-size:0.9rem;">Emmanuel BOKO</strong>
+                                <span style="font-size:0.78rem; color:var(--text-secondary);">Parakou, Bénin</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ===================================================================
+             PAGE 2 : ENVOYER / SIMULATEUR DE TRANSFERT
+             =================================================================== -->
+        <section id="page-transfer" class="page-section">
+            
+            <!-- Hero Header Simple avec Pill de Statut -->
+            <div class="transfer-hero">
+                <div class="hero-status-pill">
+                    <span class="pulse-dot"></span>
+                    <span>Réseau PayBridge Bénin • Opérationnel 24/7</span>
+                </div>
+                <h1>Transférez votre argent <span class="gradient-text">entre tous les réseaux</span> au Bénin</h1>
+                <p>Envoi instantané et sécurisé d'un compte <strong>MTN MoMo</strong>, <strong>Moov Money</strong>, <strong>Celtiis Cash</strong> ou <strong>Wave Bénin</strong> vers un autre.</p>
+            </div>
+
+            <!-- LAYOUT PRINCIPAL DE TRANSFERT (2 COLONNES SUR DESKTOP) -->
+            <div class="transfer-main-layout">
+                
+                <!-- COLONNE GAUCHE : FORMULAIRE ET SELECTION DES RESEAUX -->
+                <div class="card-transfer form-side">
+                    
+                    <form id="form-paybridge" onsubmit="event.preventDefault(); handleTransferSubmit();">
+                        
+                        <!-- 1. DEPART (SOURCE) -->
+                        <div class="form-block">
+                            <div class="block-header">
+                                <span class="label-step">1</span>
+                                <div>
+                                    <h3>Réseau d'Origine (Expéditeur)</h3>
+                                    <p class="block-sub">Sélectionnez le réseau depuis lequel vous envoyez l'argent</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Logos Réseaux Source -->
+                            <div class="operator-selector-grid" id="grid-source-ops">
+                                <div class="op-select-card active mtn" onclick="selectSourceOp('mtn', this)">
+                                    <div class="op-logo mtn">MTN</div>
+                                    <span class="op-title">MTN MoMo</span>
+                                    <i class="fa-solid fa-circle-check check-icon"></i>
+                                </div>
+                                <div class="op-select-card orange" onclick="selectSourceOp('orange', this)">
+                                    <div class="op-logo orange" style="background:#F97316;">ORANGE</div>
+                                    <span class="op-title">Orange Money</span>
+                                    <i class="fa-solid fa-circle-check check-icon"></i>
+                                </div>
+                                <div class="op-select-card moov" onclick="selectSourceOp('moov', this)">
+                                    <div class="op-logo moov">MOOV</div>
+                                    <span class="op-title">Moov Money</span>
+                                    <i class="fa-solid fa-circle-check check-icon"></i>
+                                </div>
+                                <div class="op-select-card wave" onclick="selectSourceOp('wave', this)">
+                                    <div class="op-logo wave">WAVE</div>
+                                    <span class="op-title">Wave Afrique</span>
+                                    <i class="fa-solid fa-circle-check check-icon"></i>
+                                </div>
+                                <div class="op-select-card celtiis" onclick="selectSourceOp('celtiis', this)">
+                                    <div class="op-logo celtiis">CELTIIS</div>
+                                    <span class="op-title">Celtiis Cash</span>
+                                    <i class="fa-solid fa-circle-check check-icon"></i>
+                                </div>
+                                <div class="op-select-card tmoney" onclick="selectSourceOp('tmoney', this)">
+                                    <div class="op-logo tmoney" style="background:#059669;">TMONEY</div>
+                                    <span class="op-title">TMoney</span>
+                                    <i class="fa-solid fa-circle-check check-icon"></i>
+                                </div>
+                            </div>
+
+                            <div class="input-phone-box">
+                                <span class="flag-prefix"><i class="fa-solid fa-phone-volume"></i> Indicatif</span>
+                                <input type="tel" id="input-source-phone" placeholder="Numéro Expéditeur (ex: +229 01 97 00 11 22)" maxlength="15" oninput="autoDetectPrefix('source', this.value)" required>
+                            </div>
+                        </div>
+
+                        <!-- BOUTON D'INVERSION DES RÉSEAUX -->
+                        <div class="swap-row">
+                            <button type="button" class="btn-swap-networks" onclick="swapSelectedNetworks()" title="Inverser les réseaux">
+                                <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                                <span>Inverser les réseaux</span>
+                            </button>
+                        </div>
+
+                        <!-- 2. ARRIVÉE (DESTINATION) -->
+                        <div class="form-block">
+                            <div class="block-header">
+                                <span class="label-step">2</span>
+                                <div>
+                                    <h3>Réseau de Destination (Destinataire)</h3>
+                                    <p class="block-sub">Sélectionnez le réseau qui recevra les fonds en Afrique de l'Ouest</p>
+                                </div>
+                            </div>
+
+                            <!-- Logos Réseaux Destination -->
+                            <div class="operator-selector-grid" id="grid-dest-ops">
+                                <div class="op-select-card mtn" onclick="selectDestOp('mtn', this)">
+                                    <div class="op-logo mtn">MTN</div>
+                                    <span class="op-title">MTN MoMo</span>
+                                    <i class="fa-solid fa-circle-check check-icon"></i>
+                                </div>
+                                <div class="op-select-card orange" onclick="selectDestOp('orange', this)">
+                                    <div class="op-logo orange" style="background:#F97316;">ORANGE</div>
+                                    <span class="op-title">Orange Money</span>
+                                    <i class="fa-solid fa-circle-check check-icon"></i>
+                                </div>
+                                <div class="op-select-card moov" onclick="selectDestOp('moov', this)">
+                                    <div class="op-logo moov">MOOV</div>
+                                    <span class="op-title">Moov Money</span>
+                                    <i class="fa-solid fa-circle-check check-icon"></i>
+                                </div>
+                                <div class="op-select-card wave" onclick="selectDestOp('wave', this)">
+                                    <div class="op-logo wave">WAVE</div>
+                                    <span class="op-title">Wave Afrique</span>
+                                    <i class="fa-solid fa-circle-check check-icon"></i>
+                                </div>
+                                <div class="op-select-card active celtiis" onclick="selectDestOp('celtiis', this)">
+                                    <div class="op-logo celtiis">CELTIIS</div>
+                                    <span class="op-title">Celtiis Cash</span>
+                                    <i class="fa-solid fa-circle-check check-icon"></i>
+                                </div>
+                                <div class="op-select-card tmoney" onclick="selectDestOp('tmoney', this)">
+                                    <div class="op-logo tmoney" style="background:#059669;">TMONEY</div>
+                                    <span class="op-title">TMoney</span>
+                                    <i class="fa-solid fa-circle-check check-icon"></i>
+                                </div>
+                            </div>
+
+                            <div class="input-phone-box">
+                                <span class="flag-prefix"><i class="fa-solid fa-user-check"></i> +229</span>
+                                <input type="tel" id="input-dest-phone" placeholder="Numéro Destinataire (ex: 01 95 33 44 55)" maxlength="10" oninput="autoDetectPrefix('dest', this.value)" required>
+                            </div>
+                        </div>
+
+                        <!-- 3. MONTANT & FRAIS -->
+                        <div class="form-block">
+                            <div class="block-header">
+                                <span class="label-step">3</span>
+                                <div>
+                                    <h3>Montant à Envoyer</h3>
+                                    <p class="block-sub">Saisissez le montant en FCFA (Frais fixes à 1.0%)</p>
+                                </div>
+                            </div>
+
+                            <div class="amount-entry">
+                                <input type="number" id="input-amount" placeholder="5 000" min="100" max="2000000" step="100" value="10000" oninput="recalculateFees()">
+                                <span class="unit-tag">FCFA</span>
+                            </div>
+
+                            <!-- Puces de Montant Rapides -->
+                            <div class="chips-row">
+                                <button type="button" class="chip-btn" onclick="quickAmount(2000)">2 000 F</button>
+                                <button type="button" class="chip-btn" onclick="quickAmount(5000)">5 000 F</button>
+                                <button type="button" class="chip-btn active" onclick="quickAmount(10000)">10 000 F</button>
+                                <button type="button" class="chip-btn" onclick="quickAmount(25000)">25 000 F</button>
+                                <button type="button" class="chip-btn" onclick="quickAmount(50000)">50 000 F</button>
+                            </div>
+                        </div>
+
+                        <!-- BOUTON VALIDER -->
+                        <button type="submit" class="btn-submit-transfer">
+                            <i class="fa-solid fa-paper-plane"></i> Valider le Transfert Instantané
+                        </button>
+                    </form>
+
+                </div>
+
+                <!-- COLONNE DROITE : APERÇU ET RÉSUMÉ EN DIRECT -->
+                <div class="transfer-summary-side">
+                    <div class="summary-card">
+                        <div class="summary-head">
+                            <h3><i class="fa-solid fa-bolt text-warning"></i> Aperçu du Transfert</h3>
+                            <span class="live-status-badge"><span class="pulse-green"></span> En direct</span>
+                        </div>
+
+                        <!-- Visual Route Flow -->
+                        <div class="route-preview-box">
+                            <div class="route-node">
+                                <span class="op-logo mtn" id="summary-src-logo">MTN</span>
+                                <span class="route-name" id="summary-src-name">MTN MoMo</span>
+                            </div>
+                            <div class="route-arrow">
+                                <i class="fa-solid fa-arrow-right"></i>
+                                <span class="route-speed"><i class="fa-solid fa-bolt"></i> Instantané</span>
+                            </div>
+                            <div class="route-node">
+                                <span class="op-logo celtiis" id="summary-dst-logo">CELTIIS</span>
+                                <span class="route-name" id="summary-dst-name">Celtiis Cash</span>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Fee Breakdown -->
+                        <div class="fee-summary-box">
+                            <div class="fee-line">
+                                <span>Montant Débité</span>
+                                <strong id="disp-gross">10 000 FCFA</strong>
+                            </div>
+                            <div class="fee-line fee-discount">
+                                <span>Frais d'interopérabilité (1.0%)</span>
+                                <strong id="disp-fee">100 FCFA</strong>
+                            </div>
+                            <div class="fee-divider"></div>
+                            <div class="fee-line fee-total">
+                                <span>Le destinataire recevra net</span>
+                                <strong id="disp-net" class="text-success">9 900 FCFA</strong>
+                            </div>
+                        </div>
+
+                        <!-- Trust and Security Badges -->
+                        <div class="security-guarantee-box">
+                            <div class="security-item">
+                                <i class="fa-solid fa-shield-halved text-primary"></i>
+                                <div>
+                                    <strong>Cryptage Sécurisé 256-bit</strong>
+                                    <span>Transactions protégées aux normes bancaires</span>
+                                </div>
+                            </div>
+                            <div class="security-item">
+                                <i class="fa-solid fa-receipt text-success"></i>
+                                <div>
+                                    <strong>Reçu Officiel SMS & PDF</strong>
+                                    <span>Preuve de transfert disponible immédiatement</span>
+                                </div>
+                            </div>
+                            <div class="security-item">
+                                <i class="fa-solid fa-clock text-warning"></i>
+                                <div>
+                                    <strong>Traitement Flash (&lt; 3s)</strong>
+                                    <span>Interconnexion directe entre les 4 réseaux</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- EXPLICATION VISUELLE EN 3 ÉTAPES (IMAGES LOCALES HAUTE DÉFINITION) -->
+            <div class="section-explain">
+                <div class="explain-header">
+                    <span class="guide-badge"><i class="fa-solid fa-lightbulb text-warning"></i> GUIDE SIMPLE</span>
+                    <h2>Comment effectuer un transfert inter-réseaux ?</h2>
+                    <p>Un processus ultra fluide et sécurisé en 3 étapes seulement</p>
+                </div>
+                
+                <div class="explain-grid">
+                    
+                    <div class="explain-card">
+                        <div class="explain-img-box">
+                            <img src="assets/step1.png" alt="Choix des réseaux Mobile Money au Bénin">
+                            <span class="step-badge">1</span>
+                        </div>
+                        <div class="explain-body">
+                            <h3>1. Choisissez les Réseaux</h3>
+                            <p>Sélectionnez l'opérateur d'origine (MTN, Moov, Celtiis, Wave) et saisissez les numéros expéditeur et destinataire au Bénin (+229).</p>
+                        </div>
+                    </div>
+
+                    <div class="explain-card">
+                        <div class="explain-img-box">
+                            <img src="assets/step2.png" alt="Saisie du montant en FCFA">
+                            <span class="step-badge">2</span>
+                        </div>
+                        <div class="explain-body">
+                            <h3>2. Saisissez le Montant</h3>
+                            <p>Indiquez le montant en FCFA. Nos frais fixes transparents de 1.0% s'affichent automatiquement en temps réel.</p>
+                        </div>
+                    </div>
+
+                    <div class="explain-card">
+                        <div class="explain-img-box">
+                            <img src="assets/step3.png" alt="Validation instantanée par Code PIN">
+                            <span class="step-badge">3</span>
+                        </div>
+                        <div class="explain-body">
+                            <h3>3. Validez par Code PIN</h3>
+                            <p>Confirmez votre opération en toute sécurité. Les fonds sont reçus instantanément en moins de 3 secondes avec un reçu SMS officiel.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ===================================================================
+             PAGE 3 : TARIFS & GRILLE TARIFAIRE
+             =================================================================== -->
+        <section id="page-pricing" class="page-section">
+            <div class="container-page" style="max-width: 900px; margin: 0 auto; padding: 2rem 1rem;">
+                <div class="pricing-header">
+                    <span class="guide-badge"><i class="fa-solid fa-hand-holding-dollar text-primary"></i> TRANSPARENCE TOTALE</span>
+                    <h2 style="font-size: 2rem; font-weight: 900; margin-top: 0.5rem;">Tarifs & Frais d'Interopérabilité</h2>
+                    <p style="color: var(--text-secondary);">Aucun frais caché. Un taux fixe ultra compétitif de 1.0% sur tous les transferts entre réseaux au Bénin.</p>
+                </div>
+
+                <div class="pricing-table-card">
+                    <table class="pricing-table">
+                        <thead>
+                            <tr>
+                                <th>Tranche de Montant (FCFA)</th>
+                                <th>Réseau d'Origine / Destination</th>
+                                <th>Frais PayBridge (1.0%)</th>
+                                <th>Délai de Réception</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>500 - 5 000 FCFA</strong></td>
+                                <td>MTN ↔ Moov ↔ Celtiis ↔ Wave</td>
+                                <td><strong style="color: var(--success-green);">50 FCFA</strong></td>
+                                <td><span class="live-status-badge"><span class="pulse-green"></span> Instantané (&lt;3s)</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>5 001 - 25 000 FCFA</strong></td>
+                                <td>MTN ↔ Moov ↔ Celtiis ↔ Wave</td>
+                                <td><strong style="color: var(--success-green);">1% (ex: 100 FCFA pour 10k)</strong></td>
+                                <td><span class="live-status-badge"><span class="pulse-green"></span> Instantané (&lt;3s)</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>25 001 - 100 000 FCFA</strong></td>
+                                <td>MTN ↔ Moov ↔ Celtiis ↔ Wave</td>
+                                <td><strong style="color: var(--success-green);">1.0% fixe</strong></td>
+                                <td><span class="live-status-badge"><span class="pulse-green"></span> Instantané (&lt;3s)</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>100 001 - 2 000 000 FCFA</strong></td>
+                                <td>MTN ↔ Moov ↔ Celtiis ↔ Wave</td>
+                                <td><strong style="color: var(--success-green);">1.0% fixe</strong></td>
+                                <td><span class="live-status-badge"><span class="pulse-green"></span> Instantané (&lt;3s)</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="background: #F8FAFC; border: 1px dashed var(--border-light); padding: 1.5rem; border-radius: var(--radius-lg); text-align: center;">
+                    <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.5rem;"><i class="fa-solid fa-calculator text-primary"></i> Exemple concret d'économie</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                        Pour un transfert de <strong>50 000 FCFA</strong> depuis <strong>MTN MoMo</strong> vers un compte <strong>Celtiis Cash</strong>, vous ne payez que <strong>500 FCFA</strong> de frais. Le destinataire reçoit exactement <strong>49 500 FCFA</strong> net.
+                    </p>
+                    <button class="btn-hero-primary" onclick="switchTab('transfer')" style="margin-top: 1rem; padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+                        <i class="fa-solid fa-paper-plane"></i> Lancer un Transfert Maintenant
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================
+             PAGE 4 : FAQ & SUPPORT CLIENT
+             =================================================================== -->
+        <section id="page-faq" class="page-section">
+            <div class="container-page" style="max-width: 900px; margin: 0 auto; padding: 2rem 1rem;">
+                <div class="pricing-header">
+                    <span class="guide-badge"><i class="fa-solid fa-circle-question text-warning"></i> ASSISTANCE 24/7</span>
+                    <h2 style="font-size: 2rem; font-weight: 900; margin-top: 0.5rem;">Foire Aux Questions (FAQ)</h2>
+                    <p style="color: var(--text-secondary);">Retrouvez les réponses aux questions les plus fréquentes sur PayBridge Bénin.</p>
+                </div>
+
+                <div class="faq-accordion">
+                    <div class="faq-item active">
+                        <button class="faq-question" onclick="toggleFAQ(this)">
+                            <span>Comment fonctionne l'interopérabilité entre les réseaux ?</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                        <div class="faq-answer">
+                            PayBridge Bénin dispose d'une infrastructure de trésorerie (pools de liquidité) interconnectée directement aux passerelles des 4 opérateurs (MTN MoMo, Moov Money, Celtiis Cash et Wave Bénin). Lorsque vous initiez un envoi, notre moteur effectue une compensation instantanée en moins de 3 secondes.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-question" onclick="toggleFAQ(this)">
+                            <span>Combien de temps prend un transfert ?</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                        <div class="faq-answer">
+                            Tous nos transferts sont exécutés en temps réel. Le destinataire reçoit son argent en moins de 3 secondes et une confirmation SMS officielle est envoyée immédiatement.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-question" onclick="toggleFAQ(this)">
+                            <span>Quels sont les frais appliqués ?</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                        <div class="faq-answer">
+                            Nos frais d'interopérabilité sont fixes et transparents : 1.0% seulement du montant envoyé. Il n'y a aucun frais caché d'ouverture ou d'abonnement.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-question" onclick="toggleFAQ(this)">
+                            <span>Comment obtenir une preuve ou un reçu pour ma comptabilité ?</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                        <div class="faq-answer">
+                            Après chaque transaction, un reçu numérique avec référence unique (ex: PB-2026-X891) est généré. Vous pouvez à tout moment le consulter ou le télécharger au format CSV/PDF dans la rubrique "Mes Reçus".
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-question" onclick="toggleFAQ(this)">
+                            <span>Que faire en cas d'erreur de numéro ou de problème ?</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                        <div class="faq-answer">
+                            Notre service client basé à Cotonou est disponible 24h/24 et 7j/7 par WhatsApp au <strong>+229 01 97 00 11 22</strong> ou par email à <strong>support@paybridge.bj</strong> pour toute réclamation ou annulation.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Support Box -->
+                <div style="background: linear-gradient(135deg, #1E293B, #0F172A); color: white; border-radius: var(--radius-lg); padding: 2rem; text-align: center;">
+                    <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 0.5rem;">Besoin d'une aide personnalisée ?</h3>
+                    <p style="color: #94A3B8; font-size: 0.9rem; margin-bottom: 1.5rem;">Notre équipe support est en ligne pour vous assister immédiatement.</p>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <a href="https://wa.me/2290197001122" target="_blank" class="btn-hero-primary" style="background: #10B981; text-decoration: none;">
+                            <i class="fa-brands fa-whatsapp"></i> Chat WhatsApp 24/7
+                        </a>
+                        <a href="mailto:support@paybridge.bj" class="btn-hero-secondary" style="background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.2); text-decoration: none;">
+                            <i class="fa-solid fa-envelope"></i> Nous écrire par Email
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================
+             PAGE 5 : HISTORIQUE & MES REÇUS (REQUIS AUTHENTIFICATION)
+             =================================================================== -->
+        <section id="page-history" class="page-section">
+            <div class="container-page">
+                <div class="page-header">
+                    <h2><i class="fa-solid fa-receipt"></i> Mes Reçus & Historique de Transferts</h2>
+                    <p>Consultez la liste de vos transactions et téléchargez vos reçus officiels.</p>
+                </div>
+
+                <!-- Vue Utilisateur Déconnecté (Verrouillage Connexion Requise) -->
+                <div class="guest-card" id="history-guest-view" style="display: none; max-width: 520px; margin: 3rem auto; text-align: center;">
+                    <div class="guest-icon" style="font-size: 3.5rem; color: var(--primary-blue); margin-bottom: 1.2rem;">
+                        <i class="fa-solid fa-shield-halved text-primary"></i>
+                    </div>
+                    <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 0.6rem;">Connexion Requise pour Consulter vos Reçus</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.8rem;">
+                        Connectez-vous à votre compte PayBridge pour accéder à votre historique de transferts personnel et télécharger vos preuves de paiement.
+                    </p>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <button type="button" class="btn-hero-primary" onclick="openAuthModal('login')">
+                            <i class="fa-solid fa-right-to-bracket"></i> Se Connecter
+                        </button>
+                        <button type="button" class="btn-hero-secondary" onclick="openAuthModal('register')">
+                            <i class="fa-solid fa-user-plus"></i> Créer un Compte
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Vue Utilisateur Connecté (Tableau de l'Historique des Reçus) -->
+                <div class="history-card-box" id="history-logged-view" style="display: block;">
+                    <div class="table-tools">
+                        <input type="text" id="search-tx" class="search-input" placeholder="Rechercher par numéro ou ID..." onkeyup="filterTxTable()">
+                        <button class="btn-export-csv" onclick="exportCSV()"><i class="fa-solid fa-file-csv"></i> Exporter CSV</button>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="tx-table">
+                            <thead>
+                                <tr>
+                                    <th>Référence</th>
+                                    <th>Date</th>
+                                    <th>Départ</th>
+                                    <th>Arrivée</th>
+                                    <th>Expéditeur</th>
+                                    <th>Destinataire</th>
+                                    <th>Montant Net</th>
+                                    <th>Statut</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-history">
+                                <!-- Populated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================
+             PAGE 3 : MON COMPTE & KYC
+             =================================================================== -->
+        <section id="page-account" class="page-section">
+            <div class="container-page">
+                <div class="page-header">
+                    <h2><i class="fa-solid fa-user-shield"></i> Mon Compte Client (KYC Bénin)</h2>
+                    <p>Vos informations d'identification et de sécurité conformément aux normes BCEAO.</p>
+                </div>
+
+                <!-- Active Logged In Account Display -->
+                <div class="account-grid" id="account-logged-view" style="display: none;">
+                    <div class="account-card">
+                        <div class="profile-header-box">
+                            <div class="avatar-large" id="acc-avatar">U</div>
+                            <div>
+                                <h3 id="acc-fullname">Utilisateur</h3>
+                                <span class="kyc-tag verified"><i class="fa-solid fa-check-circle"></i> Compte Vérifié KYC</span>
+                            </div>
+                        </div>
+
+                        <div class="info-list">
+                            <div class="info-item">
+                                <span>Numéro de téléphone principal</span>
+                                <strong id="acc-phone">+229 -- -- -- --</strong>
+                            </div>
+                            <div class="info-item">
+                                <span>Identifiant National (NPI / IFU Bénin)</span>
+                                <strong>1234567890123</strong>
+                            </div>
+                            <div class="info-item">
+                                <span>Réseau favori par défaut</span>
+                                <strong id="acc-net">MTN Mobile Money Bénin</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="account-card">
+                        <h3><i class="fa-solid fa-lock"></i> Sécurité du Compte</h3>
+                        <p>Code PIN de confirmation à 4 chiffres configuré pour sécuriser chaque envoi d'argent.</p>
+                        <button class="btn-sec-action" onclick="alert('Votre code PIN est configuré et sécurisé.')">Modifier mon Code PIN</button>
+                        <button class="btn-sec-action text-danger" onclick="handleLogout()" style="margin-top: 0.5rem; width: 100%; border-color: #FEE2E2;">Se Déconnecter</button>
+                    </div>
+                </div>
+
+                <!-- Not Logged Prompt -->
+                <div class="account-logged-prompt" id="account-guest-view">
+                    <div class="guest-card">
+                        <i class="fa-solid fa-user-lock guest-icon"></i>
+                        <h3>Vous n'êtes pas connecté</h3>
+                        <p>Connectez-vous ou créez votre compte pour consulter votre profil et votre statut KYC.</p>
+                        <div class="guest-btns">
+                            <button class="btn-login" onclick="openAuthModal('login')">Se Connecter</button>
+                            <button class="btn-signup" onclick="openAuthModal('register')">Créer un Compte</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================
+             PAGE 4 : TRÉSORERIE ADMIN (PROTECTION PAR CONNEXION COMPTE ADMIN)
+             =================================================================== -->
+        <section id="page-admin" class="page-section">
+            <div class="container-page">
+                
+                <!-- INVITATION DE CONNEXION ADMIN (Affiché si l'utilisateur n'est pas connecté en tant qu'Admin) -->
+                <div id="admin-login-required" class="admin-lock-card">
+                    <div class="admin-lock-icon"><i class="fa-solid fa-user-shield"></i></div>
+                    <h2>Accès Administrateur Restreint</h2>
+                    <p>La supervision de la trésorerie et des pools marchands est réservée aux <strong>superviseurs et gestionnaires de trésorerie</strong> PayBridge Bénin.</p>
+                    
+                    <div class="admin-auth-actions" style="display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1.2rem;">
+                        <button class="btn-unlock-admin" onclick="openAuthModal('login', 'admin')">
+                            <i class="fa-solid fa-right-to-bracket"></i> Se Connecter en tant qu'Administrateur
+                        </button>
+                    </div>
+                </div>
+
+                <!-- DASHBOARD ADMIN (Affiché uniquement pour les utilisateurs ayant le rôle Admin) -->
+                <div id="admin-dashboard-content" style="display: none;">
+                    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h2><i class="fa-solid fa-vault"></i> Supervision de la Trésorerie (Pools Marchands)</h2>
+                            <p>Suivi en direct des liquidités disponibles sur chaque réseau au Bénin.</p>
+                        </div>
+                        <button class="btn-lock-admin" onclick="handleLogout()"><i class="fa-solid fa-power-off"></i> Déconnexion Admin</button>
+                    </div>
+
+                    <div class="admin-pools-grid">
+                        <div class="pool-card mtn">
+                            <div class="pool-head">
+                                <span class="op-logo mtn">MTN</span>
+                                <h4>Pool MTN MoMo</h4>
+                            </div>
+                            <h2 class="pool-amount" id="amt-mtn-pool">25 000 000 FCFA</h2>
+                            <div class="pool-bar-bg"><div class="pool-bar-fill mtn" style="width: 80%;"></div></div>
+                            <div class="pool-btns">
+                                <button onclick="adjustPool('mtn', -1000000)">- 1M F</button>
+                                <button onclick="adjustPool('mtn', 1000000)">+ 1M F</button>
+                            </div>
+                        </div>
+
+                        <div class="pool-card moov">
+                            <div class="pool-head">
+                                <span class="op-logo moov">MOOV</span>
+                                <h4>Pool Moov Money</h4>
+                            </div>
+                            <h2 class="pool-amount" id="amt-moov-pool">20 000 000 FCFA</h2>
+                            <div class="pool-bar-bg"><div class="pool-bar-fill moov" style="width: 65%;"></div></div>
+                            <div class="pool-btns">
+                                <button onclick="adjustPool('moov', -1000000)">- 1M F</button>
+                                <button onclick="adjustPool('moov', 1000000)">+ 1M F</button>
+                            </div>
+                        </div>
+
+                        <div class="pool-card celtiis">
+                            <div class="pool-head">
+                                <span class="op-logo celtiis">CELTIIS</span>
+                                <h4>Pool Celtiis Cash</h4>
+                            </div>
+                            <h2 class="pool-amount" id="amt-celtiis-pool">18 500 000 FCFA</h2>
+                            <div class="pool-bar-bg"><div class="pool-bar-fill celtiis" style="width: 70%;"></div></div>
+                            <div class="pool-btns">
+                                <button onclick="adjustPool('celtiis', -1000000)">- 1M F</button>
+                                <button onclick="adjustPool('celtiis', 1000000)">+ 1M F</button>
+                            </div>
+                        </div>
+
+                        <div class="pool-card wave">
+                            <div class="pool-head">
+                                <span class="op-logo wave">WAVE</span>
+                                <h4>Pool Wave Bénin</h4>
+                            </div>
+                            <h2 class="pool-amount" id="amt-wave-pool">22 000 000 FCFA</h2>
+                            <div class="pool-bar-bg"><div class="pool-bar-fill wave" style="width: 75%;"></div></div>
+                            <div class="pool-btns">
+                                <button onclick="adjustPool('wave', -1000000)">- 1M F</button>
+                                <button onclick="adjustPool('wave', 1000000)">+ 1M F</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+    </main>
+
+    <!-- ===================================================================
+         GLOBAL FOOTER (PIED DE PAGE COMPLET & TRANSPARENCE FINTECH AFRIQUE)
+         =================================================================== -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                
+                <!-- COLONNE 1: MARQUE & DESCRIPTION -->
+                <div class="footer-col brand-col">
+                    <div class="footer-logo">
+                        <svg width="32" height="32" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <rect width="36" height="36" rx="10" fill="url(#pb-grad-ftr)"/>
+                          <path d="M9 22C9 16.4772 13.4772 12 19 12H26" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+                          <path d="M27 14C27 19.5228 22.5228 24 17 24H10" stroke="#FFCC00" stroke-width="3" stroke-linecap="round"/>
+                          <circle cx="19" cy="12" r="2.2" fill="#10B981"/>
+                          <circle cx="17" cy="24" r="2.2" fill="#10B981"/>
+                          <defs>
+                            <linearGradient id="pb-grad-ftr" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                              <stop stop-color="#2563EB"/>
+                              <stop offset="1" stop-color="#1D4ED8"/>
+                            </linearGradient>
+                          </defs>
+                        </svg>
+                        <span class="footer-brand-title">PayBridge <span class="footer-sub-tag">AFRIQUE</span></span>
+                    </div>
+                    <p class="footer-desc">
+                        1ère infrastructure d'interopérabilité Mobile Money sécurisée en Afrique de l'Ouest. Transférez instantanément vos fonds entre tous les réseaux d'opérateurs de la zone UEMOA.
+                    </p>
+                    <div class="footer-badges">
+                        <span class="badge-pill-ftr"><i class="fa-solid fa-lock text-success"></i> SSL 256-bit</span>
+                        <span class="badge-pill-ftr"><i class="fa-solid fa-shield-halved text-primary"></i> BCEAO & CENTIF</span>
+                    </div>
+                </div>
+
+                <!-- COLONNE 2: NAVIGATION RAPIDE -->
+                <div class="footer-col">
+                    <h4 class="footer-heading">Navigation</h4>
+                    <ul class="footer-links">
+                        <li><a href="#" onclick="event.preventDefault(); switchTab('home');"><i class="fa-solid fa-angle-right"></i> Accueil</a></li>
+                        <li><a href="#" onclick="event.preventDefault(); switchTab('transfer');"><i class="fa-solid fa-angle-right"></i> Effectuer un Transfert</a></li>
+                        <li><a href="#" onclick="event.preventDefault(); switchTab('pricing');"><i class="fa-solid fa-angle-right"></i> Tarifs & Frais (1.0%)</a></li>
+                        <li><a href="#" onclick="event.preventDefault(); switchTab('faq');"><i class="fa-solid fa-angle-right"></i> FAQ & Assistance 24/7</a></li>
+                    </ul>
+                </div>
+
+                <!-- COLONNE 3: PAYS COUVERTS UEMOA -->
+                <div class="footer-col">
+                    <h4 class="footer-heading">Réseau Régional</h4>
+                    <ul class="footer-countries">
+                        <li>🇧🇯 <strong>Bénin</strong> (MTN, Moov, Celtiis, Wave)</li>
+                        <li>🇹🇬 <strong>Togo</strong> (TMoney, Moov)</li>
+                        <li>🇨🇮 <strong>Côte d'Ivoire</strong> (Orange, MTN, Wave, Moov)</li>
+                        <li>🇸🇳 <strong>Sénégal</strong> (Orange, Wave, Free)</li>
+                        <li>🇧🇫 <strong>Burkina Faso</strong> (Orange, Moov)</li>
+                        <li>🇲🇱 <strong>Mali</strong> (Orange, Moov)</li>
+                    </ul>
+                </div>
+
+                <!-- COLONNE 4: CONTACT & SUPPORT CLIENT -->
+                <div class="footer-col">
+                    <h4 class="footer-heading">Contact & Support</h4>
+                    <ul class="footer-contact-list">
+                        <li><i class="fa-brands fa-whatsapp text-success"></i> WhatsApp 24/7 : <strong>+229 01 97 00 11 22</strong></li>
+                        <li><i class="fa-solid fa-envelope text-primary"></i> Support : <strong>support@paybridge.africa</strong></li>
+                        <li><i class="fa-solid fa-location-dot text-danger"></i> Siège : <strong>Cotonou, Haie Vive, Bénin</strong></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <!-- RANGÉE DU BAS: COPYRIGHT & CREDITS DÉVELOPPEUR -->
+            <div class="footer-bottom-bar">
+                <div class="footer-copy">
+                    © 2026 <strong>PayBridge Afrique Technologies Inc.</strong> Tous droits réservés.
+                </div>
+                <div class="footer-dev-credits">
+                    <i class="fa-solid fa-code text-primary"></i> Architecture & Développement : <strong>Équipe Ingénierie PayBridge</strong>
+                </div>
+                <div class="footer-legal-links">
+                    <a href="#" onclick="event.preventDefault(); alert('Mentions Légales PayBridge Afrique : Plateforme conforme aux directives de la BCEAO et de la CENTIF.');">Mentions Légales</a> • 
+                    <a href="#" onclick="event.preventDefault(); alert('Politique de Confidentialité : Vos données bancaires et numéros de téléphone sont chiffrés de bout en bout.');">Confidentialité</a> • 
+                    <a href="#" onclick="event.preventDefault(); alert('Conditions Générales d\'Utilisation : Taux fixe d\'interopérabilité de 1.0% sans aucun frais caché.');">CGU</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- AUTHENTICATION MODAL (CONNEXION & INSCRIPTION RESTYLÉS) -->
+    <div class="modal-overlay" id="modal-auth">
+        <div class="modal-card auth-modal-card">
+            <button class="modal-close-btn" onclick="closeAuthModal()">&times;</button>
+
+            <!-- BANNIÈRE EN-TÊTE AUTHENTIFICATION -->
+            <div class="auth-header-banner">
+                <div class="auth-brand-badge">
+                    <svg width="20" height="20" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect width="36" height="36" rx="10" fill="url(#pb-grad-modal)"/>
+                      <path d="M9 22C9 16.4772 13.4772 12 19 12H26" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+                      <path d="M27 14C27 19.5228 22.5228 24 17 24H10" stroke="#FFCC00" stroke-width="3" stroke-linecap="round"/>
+                      <circle cx="19" cy="12" r="2.2" fill="#10B981"/>
+                      <circle cx="17" cy="24" r="2.2" fill="#10B981"/>
+                      <defs>
+                        <linearGradient id="pb-grad-modal" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                          <stop stop-color="#2563EB"/>
+                          <stop offset="1" stop-color="#1D4ED8"/>
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                    <span class="auth-brand-title">PayBridge <strong>BÉNIN</strong></span>
+                </div>
+                <h2>Bienvenue sur PayBridge</h2>
+                <p>Plateforme sécurisée d'interopérabilité réseau au Bénin</p>
+            </div>
+
+            <!-- ONGLETS DE SELECTION -->
+            <div class="auth-tabs-head">
+                <button class="auth-tab-btn active" id="atab-login" onclick="switchAuthForm('login')">
+                    <i class="fa-solid fa-right-to-bracket"></i> Connexion
+                </button>
+                <button class="auth-tab-btn" id="atab-register" onclick="switchAuthForm('register')">
+                    <i class="fa-solid fa-user-plus"></i> Inscription
+                </button>
+            </div>
+
+            <!-- FORM 1: CONNEXION -->
+            <form id="auth-form-login" class="auth-form-body active" onsubmit="event.preventDefault(); submitLogin();">
+                <div class="auth-field-group">
+                    <div class="auth-field">
+                        <label id="lbl-login-phone">Numéro de téléphone (+229)</label>
+                        <div class="auth-input-wrapper">
+                            <i class="fa-solid fa-phone input-icon"></i>
+                            <input type="tel" id="login-phone" placeholder="Numéro de téléphone" maxlength="10" required>
+                        </div>
+                    </div>
+                    <div class="auth-field">
+                        <label>Code PIN / Mot de passe</label>
+                        <div class="auth-input-wrapper">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <input type="password" id="login-pin" placeholder="••••••••" maxlength="6" required>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-auth-submit" id="btn-login-submit">
+                    <i class="fa-solid fa-right-to-bracket"></i> Se Connecter
+                </button>
+
+                <div class="auth-trust-footer">
+                    <i class="fa-solid fa-shield-halved text-success"></i>
+                    <span>Connexion chiffrée SSL 256-bit aux normes bancaires.</span>
+                </div>
+            </form>
+
+            <!-- FORM 2: INSCRIPTION COMPLÈTE -->
+            <form id="auth-form-register" class="auth-form-body" onsubmit="event.preventDefault(); initiateRegistration();">
+                <div class="auth-field-group">
+                    
+                    <div class="auth-field">
+                        <label>Nom de famille</label>
+                        <div class="auth-input-wrapper">
+                            <i class="fa-solid fa-user input-icon"></i>
+                            <input type="text" id="reg-lastname" placeholder="Nom" required>
+                        </div>
+                    </div>
+
+                    <div class="auth-field">
+                        <label>Prénom(s)</label>
+                        <div class="auth-input-wrapper">
+                            <i class="fa-solid fa-user input-icon"></i>
+                            <input type="text" id="reg-firstname" placeholder="Prénom" required>
+                        </div>
+                    </div>
+
+                    <div class="auth-field">
+                        <label>Pays de résidence</label>
+                        <div class="auth-input-wrapper">
+                            <i class="fa-solid fa-globe input-icon"></i>
+                            <select id="reg-country" style="flex:1; background:transparent; border:none; outline:none; font-weight:700; padding:0.75rem 0; color: var(--text-primary);">
+                                <option value="BJ">🇧🇯 Bénin (+229)</option>
+                                <option value="TG">🇹🇬 Togo (+228)</option>
+                                <option value="CI">🇨🇮 Côte d'Ivoire (+225)</option>
+                                <option value="SN">🇸🇳 Sénégal (+221)</option>
+                                <option value="BF">🇧🇫 Burkina Faso (+226)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="auth-field">
+                        <label>Numéro de téléphone</label>
+                        <div class="auth-input-wrapper">
+                            <i class="fa-solid fa-phone input-icon"></i>
+                            <input type="tel" id="reg-phone" placeholder="Numéro de téléphone" maxlength="10" required>
+                        </div>
+                    </div>
+
+                    <div class="auth-field">
+                        <label>Adresse Email</label>
+                        <div class="auth-input-wrapper">
+                            <i class="fa-solid fa-envelope input-icon"></i>
+                            <input type="email" id="reg-email" placeholder="votre.email@domaine.com" required>
+                        </div>
+                    </div>
+
+                    <div class="auth-field">
+                        <label>Code PIN / Mot de passe (4 chiffres)</label>
+                        <div class="auth-input-wrapper">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <input type="password" id="reg-pin" placeholder="••••" maxlength="4" required>
+                        </div>
+                    </div>
+
+                </div>
+
+                <button type="submit" class="btn-auth-submit btn-signup-bg">
+                    <i class="fa-solid fa-paper-plane"></i> Obtenir mon Code de Vérification
+                </button>
+
+                <div class="auth-trust-footer">
+                    <i class="fa-solid fa-shield-halved text-success"></i>
+                    <span>Un code OTP sera envoyé par SMS & Email pour valider le compte.</span>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- MODAL DE VÉRIFICATION CODE OTP (SMS / EMAIL) -->
+    <div class="modal-overlay" id="modal-otp">
+        <div class="modal-card auth-modal-card">
+            <button class="modal-close-btn" onclick="closeOtpModal()">&times;</button>
+
+            <div class="auth-header-banner" style="background: linear-gradient(135deg, #0F172A, #1E293B);">
+                <div class="auth-brand-badge">
+                    <i class="fa-solid fa-shield-halved text-warning"></i>
+                    <span class="auth-brand-title">Sécurité <strong>PayBridge</strong></span>
+                </div>
+                <h2>Validation de votre Compte</h2>
+                <p>Confirmez le code de sécurité pour activer votre accès</p>
+            </div>
+
+            <div style="padding: 1.5rem 1.6rem 1.8rem; text-align: center;">
+                
+                <div style="background: #EFF6FF; border: 1px solid #BFDBFE; color: #1D4ED8; padding: 10px 12px; border-radius: 10px; font-size: 0.8rem; font-weight: 700; margin-bottom: 1.2rem; text-align: left; display: flex; flex-direction: column; gap: 4px;">
+                    <div><i class="fa-solid fa-mobile-screen-button"></i> SMS envoyé à : <strong id="otp-target-phone">+229 -- -- -- --</strong></div>
+                    <div><i class="fa-solid fa-envelope"></i> Email envoyé à : <strong id="otp-target-email">--</strong></div>
+                </div>
+
+                <p style="font-size: 0.84rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                    Saisissez le code de validation à 6 chiffres :
+                </p>
+
+                <!-- 6 CASES CODE OTP (VIDES PAR DÉFAUT) -->
+                <div style="display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1.2rem;">
+                    <input type="text" maxlength="1" class="otp-input-digit" placeholder="•" style="width:42px; height:48px; border-radius:8px; border:2px solid var(--border-light); text-align:center; font-size:1.4rem; font-weight:800; color:var(--primary-blue);" autofocus>
+                    <input type="text" maxlength="1" class="otp-input-digit" placeholder="•" style="width:42px; height:48px; border-radius:8px; border:2px solid var(--border-light); text-align:center; font-size:1.4rem; font-weight:800; color:var(--primary-blue);">
+                    <input type="text" maxlength="1" class="otp-input-digit" placeholder="•" style="width:42px; height:48px; border-radius:8px; border:2px solid var(--border-light); text-align:center; font-size:1.4rem; font-weight:800; color:var(--primary-blue);">
+                    <input type="text" maxlength="1" class="otp-input-digit" placeholder="•" style="width:42px; height:48px; border-radius:8px; border:2px solid var(--border-light); text-align:center; font-size:1.4rem; font-weight:800; color:var(--primary-blue);">
+                    <input type="text" maxlength="1" class="otp-input-digit" placeholder="•" style="width:42px; height:48px; border-radius:8px; border:2px solid var(--border-light); text-align:center; font-size:1.4rem; font-weight:800; color:var(--primary-blue);">
+                    <input type="text" maxlength="1" class="otp-input-digit" placeholder="•" style="width:42px; height:48px; border-radius:8px; border:2px solid var(--border-light); text-align:center; font-size:1.4rem; font-weight:800; color:var(--primary-blue);">
+                </div>
+
+                <div style="display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1.2rem;">
+                    <button type="button" onclick="resendOTP('sms')" style="background: #F1F5F9; border: 1px solid var(--border-light); padding: 6px 12px; border-radius: 6px; font-size: 0.76rem; font-weight: 700; cursor: pointer; color: var(--text-primary);">
+                        <i class="fa-solid fa-comment-sms text-primary"></i> Renvoyer par SMS
+                    </button>
+                    <button type="button" onclick="resendOTP('gmail')" style="background: #F1F5F9; border: 1px solid var(--border-light); padding: 6px 12px; border-radius: 6px; font-size: 0.76rem; font-weight: 700; cursor: pointer; color: var(--text-primary);">
+                        <i class="fa-solid fa-envelope text-danger"></i> Renvoyer par Email (Gmail)
+                    </button>
+                </div>
+
+                <button type="button" class="btn-auth-submit btn-signup-bg" onclick="confirmRegisterOTP()">
+                    <i class="fa-solid fa-circle-check"></i> Valider et Activer mon Compte
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMATION PIN -->
+    <div class="modal-overlay" id="modal-pin">
+        <div class="modal-card">
+            <button class="modal-close-btn" onclick="closePinModal()">&times;</button>
+            <div class="pin-modal-body">
+                <div class="pin-icon"><i class="fa-solid fa-lock"></i></div>
+                <h3>Entrez votre Code PIN</h3>
+                <p>Validez le transfert de <strong id="pin-modal-amount">10 000 FCFA</strong></p>
+                <div class="pin-fields">
+                    <input type="password" maxlength="1" value="8" readonly>
+                    <input type="password" maxlength="1" value="8" readonly>
+                    <input type="password" maxlength="1" value="8" readonly>
+                    <input type="password" maxlength="1" value="8" readonly>
+                </div>
+                <button class="btn-confirm-pin" onclick="confirmTransferExecution()">Valider et Envoyer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL REÇU TRANSACTION -->
+    <div class="modal-overlay" id="modal-receipt">
+        <div class="modal-card receipt-card-modal">
+            <button class="modal-close-btn" onclick="closeReceiptModal()">&times;</button>
+            <div class="receipt-header-icon">
+                <i class="fa-solid fa-circle-check text-success"></i>
+            </div>
+            <h2>Transfert Réussi !</h2>
+            <span class="receipt-ref-code" id="rec-ref">REF: PB-BJ-98231409</span>
+
+            <div class="receipt-content">
+                <div class="receipt-net-box">
+                    <span>Montant Reçu par le Destinataire</span>
+                    <h1 id="rec-net">9 900 FCFA</h1>
+                </div>
+
+                <div class="receipt-route-box">
+                    <div class="route-item">
+                        <span class="op-logo" id="rec-src-logo">MTN</span>
+                        <div class="route-txt">
+                            <strong id="rec-src-name">MTN MoMo</strong>
+                            <span id="rec-src-phone">+229 01 97 00 11 22</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-arrow-right route-arrow-icon"></i>
+                    <div class="route-item">
+                        <span class="op-logo" id="rec-dst-logo">CELTIIS</span>
+                        <div class="route-txt">
+                            <strong id="rec-dst-name">Celtiis Cash</strong>
+                            <span id="rec-dst-phone">+229 01 95 33 44 55</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="receipt-modal-actions">
+                <button class="btn-rec-action" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimer Reçu</button>
+                <button class="btn-rec-primary" onclick="closeReceiptModal()"><i class="fa-solid fa-check"></i> Terminer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TIROIR / CENTRE DE NOTIFICATIONS SMS -->
+    <div class="notif-drawer-overlay" id="notif-drawer-modal" onclick="if(event.target === this) SMSNotifications.toggleDrawer()">
+        <div class="notif-drawer-content">
+            <div class="notif-drawer-header">
+                <div class="notif-drawer-title">
+                    <i class="fa-solid fa-comment-sms text-primary"></i> Notifications SMS & Push
+                </div>
+                <button class="sms-close-btn" onclick="SMSNotifications.toggleDrawer()">&times;</button>
+            </div>
+            <div class="notif-drawer-body" id="notif-drawer-list">
+                <!-- Les notifications SMS simulées s'affichent ici -->
+                <div class="empty-notif-state">
+                    <i class="fa-regular fa-bell-slash" style="font-size: 2.5rem; color: #9CA3AF;"></i>
+                    <p>Aucune notification SMS reçue pour le moment.</p>
+                    <small>Effectuez un transfert pour simuler la réception de SMS MTN, Moov, Celtiis ou Wave.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript App & SMS Notification Manager -->
+    <script src="js/smsNotifications.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
