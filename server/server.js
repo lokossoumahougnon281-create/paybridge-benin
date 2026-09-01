@@ -37,6 +37,11 @@ app.use('/api/v1/admin', adminRoutes);
 const frontendPath = path.join(__dirname, '..');
 app.use(express.static(frontendPath));
 
+// Health Check Endpoint for Cloud Deployments (Render / Railway / Heroku)
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'OK', service: 'PayBridge Benin API' });
+});
+
 // Fallback to index.html for single page app
 app.use((req, res) => {
     if (!req.path.startsWith('/api/')) {
@@ -47,7 +52,7 @@ app.use((req, res) => {
 });
 
 // Start Server
-app.listen(PORT, () => {
-    console.log(`🚀 Serveur PayBridge Bénin démarré sur http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Serveur PayBridge Bénin démarré sur port ${PORT}`);
     console.log(`🔒 Sécurité activée : Bcrypt + JWT Cookies + SQLite DB + Rate Limiter.`);
 });

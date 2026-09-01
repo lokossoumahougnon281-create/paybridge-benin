@@ -5,8 +5,12 @@ const path = require('path');
 const dbPath = path.join(__dirname, '..', 'paybridge.db');
 const db = new Database(dbPath);
 
-// Enable WAL mode for better concurrency performance
-db.pragma('journal_mode = WAL');
+// Enable WAL mode safely for cloud filesystems
+try {
+    db.pragma('journal_mode = WAL');
+} catch (e) {
+    console.warn('⚠️ WAL mode fallback:', e.message);
+}
 
 function initDb() {
     // Create Users table
