@@ -5,6 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node server/server.js",
+    "build": "npm rebuild better-sqlite3 bcryptjs || true",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
