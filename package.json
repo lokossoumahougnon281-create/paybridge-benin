@@ -2,7 +2,7 @@
   "name": "benin-transfer-app",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
     "build": "npm rebuild better-sqlite3 bcryptjs || true",

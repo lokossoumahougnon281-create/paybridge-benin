@@ -1,3 +1,9 @@
+// If executed directly by Node.js (e.g. Render running 'node app.js'), start the Express backend server:
+if (typeof window === 'undefined') {
+    require('./server/server.js');
+    return;
+}
+
 /* ==========================================================================
    PAYBRIDGE BÉNIN - INTEROPERABILITY & AUTHENTICATION LOGIC (JS)
    ========================================================================== */
@@ -117,15 +123,17 @@ const DEFAULT_HISTORY = [
 ];
 
 // Initialize Application
-document.addEventListener('DOMContentLoaded', () => {
-    initNetworkGrids();
-    initRecentShortcuts();
-    loadHistory();
-    loadHubRecent();
-    calculateFees();
-    updateAdminDashboard();
-    updateUserWidget();
-});
+if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', () => {
+        initNetworkGrids();
+        initRecentShortcuts();
+        loadHistory();
+        loadHubRecent();
+        calculateFees();
+        updateAdminDashboard();
+        updateUserWidget();
+    });
+}
 
 // AUTHENTICATION MODAL LOGIC
 function openAuthModal(tabName = 'login') {
