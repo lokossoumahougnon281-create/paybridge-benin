@@ -2055,3 +2055,235 @@ body.dark-theme .otp-input-digit {
     color: #60A5FA;
     font-weight: 700;
 }
+
+/* ==========================================================================
+   PAYBRIDGE BÉNIN - COMPREHENSIVE RESPONSIVE DESIGN FOR MOBILES & TABLETS
+   ========================================================================== */
+
+/* 1. Global Touch & Box Sizing */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+}
+
+.container, .taptap-hero-wrapper, .navbar {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* 2. Responsive Navigation Bar (Tablet & Mobile) */
+@media (max-width: 860px) {
+    .navbar {
+        padding: 0.6rem 0.8rem;
+    }
+    
+    .nav-container {
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        padding: 0;
+    }
+    
+    .nav-brand {
+        flex: 1;
+    }
+    
+    .nav-user {
+        gap: 0.4rem;
+    }
+
+    .user-name {
+        display: none; /* Icon-only avatar badge on mobile */
+    }
+
+    .nav-menu {
+        width: 100%;
+        order: 3;
+        display: flex;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+        padding: 4px;
+        gap: 0.3rem;
+        scrollbar-width: none;
+    }
+
+    .nav-menu::-webkit-scrollbar {
+        display: none;
+    }
+
+    .nav-link {
+        flex-shrink: 0;
+        padding: 0.5rem 0.85rem;
+        font-size: 0.82rem;
+    }
+}
+
+/* 3. Hero Header & Titles */
+@media (max-width: 992px) {
+    .taptap-hero-wrapper {
+        grid-template-columns: 1fr !important;
+        gap: 1.8rem !important;
+        padding: 1.5rem 0 2.5rem !important;
+    }
+    
+    .transfer-main-layout {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .taptap-hero-content .hero-title,
+    .hero-banner h1 {
+        font-size: 1.75rem !important;
+        line-height: 1.25 !important;
+        letter-spacing: -0.02em !important;
+    }
+
+    .taptap-hero-content .hero-subtitle,
+    .hero-banner p {
+        font-size: 0.88rem !important;
+        line-height: 1.45 !important;
+    }
+
+    .hero-badges-flex,
+    .hero-features-list {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.5rem !important;
+        font-size: 0.8rem !important;
+    }
+}
+
+/* 4. Calculator Cards & Transfer Components */
+@media (max-width: 600px) {
+    .taptap-calc-card,
+    .card-transfer,
+    .card-hub,
+    .admin-card,
+    .account-card {
+        padding: 1.1rem 0.9rem !important;
+        border-radius: 16px !important;
+    }
+
+    .calc-card-header h3,
+    .block-header h3 {
+        font-size: 0.98rem !important;
+    }
+
+    /* Grids of operator badges */
+    .operator-selector-grid,
+    .network-selector-grid,
+    .op-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.45rem !important;
+    }
+
+    .op-select-card,
+    .network-card {
+        padding: 0.55rem 0.35rem !important;
+    }
+
+    .op-title {
+        font-size: 0.72rem !important;
+    }
+
+    .op-logo {
+        font-size: 0.65rem !important;
+        padding: 2px 5px !important;
+    }
+
+    /* Input groups & Phone numbers */
+    .phone-input-group,
+    .input-with-prefix {
+        flex-wrap: wrap !important;
+    }
+
+    .input-phone,
+    .input-amount {
+        font-size: 0.95rem !important;
+    }
+
+    .amount-input-lg {
+        font-size: 1.3rem !important;
+    }
+
+    .btn-submit-transfer,
+    .btn-main-action {
+        padding: 0.85rem 1rem !important;
+        font-size: 0.95rem !important;
+    }
+}
+
+/* 5. Dashboard Grids & Tables */
+@media (max-width: 800px) {
+    .admin-grid,
+    .pool-cards-grid,
+    .stats-grid,
+    .account-grid,
+    .hub-dual-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 640px) {
+    .history-table,
+    .transactions-table {
+        font-size: 0.76rem !important;
+    }
+
+    .history-table th,
+    .history-table td,
+    .transactions-table th,
+    .transactions-table td {
+        padding: 0.5rem 0.4rem !important;
+        white-space: nowrap !important;
+    }
+}
+
+/* 6. Modals & Dialog Boxes */
+@media (max-width: 600px) {
+    .modal {
+        padding: 0.75rem !important;
+        align-items: flex-end !important;
+    }
+
+    .modal-content,
+    .auth-modal-box,
+    .receipt-modal {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: 90vh !important;
+        margin: 0 !important;
+        border-bottom-left-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+        padding: 1.2rem 1rem !important;
+        overflow-y: auto !important;
+    }
+
+    .toast-container {
+        left: 0.8rem !important;
+        right: 0.8rem !important;
+        bottom: 0.8rem !important;
+        width: auto !important;
+    }
+    
+    .toast {
+        font-size: 0.8rem !important;
+        padding: 0.65rem 0.9rem !important;
+    }
+}
+
