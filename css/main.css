@@ -2255,23 +2255,64 @@ html, body {
 }
 
 /* 6. Modals & Dialog Boxes */
+.auth-modal-card .modal-close-btn,
+.modal-card .modal-close-btn {
+    top: 1rem !important;
+    right: 1rem !important;
+    color: #FFFFFF !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.1rem !important;
+    z-index: 25 !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: background 0.2s ease !important;
+}
+
+.auth-modal-card .modal-close-btn:hover {
+    background: rgba(255, 255, 255, 0.35) !important;
+}
+
 @media (max-width: 600px) {
-    .modal {
-        padding: 0.75rem !important;
-        align-items: flex-end !important;
+    .modal-overlay, .modal {
+        padding: 0.5rem !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
 
     .modal-content,
     .auth-modal-box,
+    .auth-modal-card,
+    .modal-card,
+    .receipt-card-modal,
     .receipt-modal {
-        width: 100% !important;
-        max-width: 100% !important;
-        max-height: 90vh !important;
-        margin: 0 !important;
-        border-bottom-left-radius: 0 !important;
-        border-bottom-right-radius: 0 !important;
+        width: 95% !important;
+        max-width: 95% !important;
+        max-height: 88vh !important;
+        margin: auto !important;
+        border-radius: var(--radius-lg) !important;
         padding: 1.2rem 1rem !important;
         overflow-y: auto !important;
+    }
+
+    .hero-demo-card,
+    .taptap-hero-wrapper {
+        margin-bottom: 2rem !important;
+    }
+
+    select.select-operator,
+    select.select-country,
+    select.input-phone-prefix {
+        font-size: 0.82rem !important;
+        padding-right: 1.6rem !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
     }
 
     .toast-container {
@@ -2286,4 +2327,5 @@ html, body {
         padding: 0.65rem 0.9rem !important;
     }
 }
+
 
