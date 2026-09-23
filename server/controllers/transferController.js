@@ -1,6 +1,7 @@
 const { db, logSecurityEvent } = require('../config/database');
 const bcrypt = require('bcryptjs');
 const { generateSuccessSms, generateErrorSms } = require('../utils/smsGenerator');
+const { dispatchRealSms } = require('../services/smsService');
 
 function generateReference() {
     const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -105,6 +106,11 @@ function executeTransfer(req, res) {
             gross,
             fee,
             net
+        });
+
+        // Dispatch real SMS asynchronously to physical numbers (Termii / Twilio / Sandbox)
+        dispatchRealSms(smsNotifications).catch(err => {
+            console.warn('⚠️ Erreur lors du dispatching des SMS réels:', err.message);
         });
 
         return res.json({

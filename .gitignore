@@ -7,8 +7,10 @@ package-lock.json
 .env.local
 
 # SQLite Database local files & WAL
+*.db
 *.db-wal
 *.db-shm
+server/data/
 
 # Logs
 *.log

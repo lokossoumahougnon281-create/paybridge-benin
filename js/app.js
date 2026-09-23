@@ -440,7 +440,9 @@ function recalculateFees() {
 
     if (grossEl) grossEl.innerText = formatFCFA(gross);
     if (feeEl) feeEl.innerText = formatFCFA(fee);
-    if (netEl) netEl.innerText = formatFCFA(net);
+    if (netEl) {
+        animateBalanceValue(netEl, net, 350);
+    }
 }
 
 function quickAmount(val) {
@@ -558,7 +560,10 @@ async function confirmTransferExecution() {
     }
 }
 
+let lastReceiptTx = null;
+
 function showReceipt(tx) {
+    lastReceiptTx = tx;
     document.getElementById('rec-ref').innerText = 'REF: ' + tx.id;
     document.getElementById('rec-net').innerText = formatFCFA(tx.net);
     
@@ -571,6 +576,32 @@ function showReceipt(tx) {
     document.getElementById('rec-dst-phone').innerText = tx.destPhone;
 
     document.getElementById('modal-receipt').classList.add('active');
+}
+
+function shareCurrentReceiptWhatsApp() {
+    if (!lastReceiptTx) return;
+    const srcNetName = NETWORKS[lastReceiptTx.sourceNet] ? NETWORKS[lastReceiptTx.sourceNet].name : lastReceiptTx.sourceNet;
+    const dstNetName = NETWORKS[lastReceiptTx.destNet] ? NETWORKS[lastReceiptTx.destNet].name : lastReceiptTx.destNet;
+    const textMsg = `⚡ *REÇU OFFICIEL PAYBRIDGE BÉNIN*\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `• *Réf* : ${lastReceiptTx.id}\n` +
+        `• *Montant net reçu* : ${formatFCFA(lastReceiptTx.net)}\n` +
+        `• *Expéditeur* : ${srcNetName} (${lastReceiptTx.sourcePhone})\n` +
+        `• *Bénéficiaire* : ${dstNetName} (${lastReceiptTx.destPhone})\n` +
+        `• *Frais* : ${formatFCFA(lastReceiptTx.fee)}\n` +
+        `• *Statut* : SUCCÈS ✅\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `Transfert instantané inter-réseaux validé via PayBridge Bénin.`;
+
+    const destClean = (lastReceiptTx.destPhone || '').toString().replace(/[^0-9]/g, '');
+    let cleanPhone = destClean;
+    if (cleanPhone.startsWith('00')) cleanPhone = cleanPhone.substring(2);
+    if (cleanPhone.length === 10 && cleanPhone.startsWith('01')) cleanPhone = '229' + cleanPhone;
+    else if (cleanPhone.length === 8) cleanPhone = '22901' + cleanPhone;
+    else if (!cleanPhone.startsWith('229') && cleanPhone.length <= 10) cleanPhone = '229' + cleanPhone;
+
+    const waUrl = cleanPhone ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(textMsg)}` : `https://api.whatsapp.com/send?text=${encodeURIComponent(textMsg)}`;
+    window.open(waUrl, '_blank');
 }
 
 function closeReceiptModal() {
@@ -653,7 +684,9 @@ async function updateAdminPools() {
                     NETWORKS[k].pool = data.pools[k].pool;
                 }
                 const el = document.getElementById(`amt-${k}-pool`);
-                if (el) el.innerText = formatFCFA(data.pools[k].pool);
+                if (el) {
+                    animateBalanceValue(el, data.pools[k].pool, 600);
+                }
             });
         }
     } catch (e) {}
@@ -670,26 +703,70 @@ async function adjustPool(key, delta) {
 
         if (data.success) {
             updateAdminPools();
-            showToast(data.message);
+            showToast(data.message, 'success');
         } else {
-            showToast('⚠️ ' + data.message);
+            showToast(data.message, 'warning');
         }
     } catch (e) {
-        showToast('Erreur d\'ajustement du pool.');
+        showToast('Erreur d\'ajustement du pool.', 'error');
     }
 }
 
-// Toast System
-function showToast(msg) {
+// Fluid Numeric Counter & Balance Animator
+function animateBalanceValue(elementOrId, targetValue, duration = 600, prefix = '', suffix = ' FCFA') {
+    const el = typeof elementOrId === 'string' ? document.getElementById(elementOrId) : elementOrId;
+    if (!el) return;
+
+    const startText = el.innerText.replace(/[^0-9.-]+/g, '');
+    const startValue = parseFloat(startText) || 0;
+    if (startValue === targetValue) {
+        el.innerText = `${prefix}${new Intl.NumberFormat('fr-FR').format(targetValue)}${suffix}`;
+        return;
+    }
+
+    const startTime = performance.now();
+    el.classList.remove('balance-pulse');
+    void el.offsetWidth; // Force CSS reflow
+    el.classList.add('balance-pulse');
+
+    function step(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        // Quartic Ease-Out curve for ultra-smooth decelerating motion
+        const ease = 1 - Math.pow(1 - progress, 4);
+        const currentVal = Math.round(startValue + (targetValue - startValue) * ease);
+        el.innerText = `${prefix}${new Intl.NumberFormat('fr-FR').format(currentVal)}${suffix}`;
+
+        if (progress < 1) {
+            requestAnimationFrame(step);
+        } else {
+            el.innerText = `${prefix}${new Intl.NumberFormat('fr-FR').format(targetValue)}${suffix}`;
+            setTimeout(() => el.classList.remove('balance-pulse'), 300);
+        }
+    }
+    requestAnimationFrame(step);
+}
+
+// Toast Notification System with Animation & Type Styling
+function showToast(msg, type = 'success') {
     const container = document.getElementById('toast-container');
     if (!container) return;
 
     const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.innerHTML = `<i class="fa-solid fa-circle-check text-success"></i> <span>${msg}</span>`;
+    toast.className = `toast toast-${type}`;
+    
+    let iconClass = 'fa-solid fa-circle-check text-success';
+    if (type === 'error') iconClass = 'fa-solid fa-circle-exclamation text-danger';
+    if (type === 'warning') iconClass = 'fa-solid fa-triangle-exclamation text-warning';
+    if (type === 'info') iconClass = 'fa-solid fa-circle-info text-primary';
+
+    toast.innerHTML = `<i class="${iconClass}"></i> <span>${msg}</span>`;
     container.appendChild(toast);
 
-    setTimeout(() => toast.remove(), 3000);
+    setTimeout(() => {
+        toast.classList.add('toast-leave');
+        setTimeout(() => toast.remove(), 320);
+    }, 3800);
 }
 
 async function checkSessionOnLoad() {
@@ -761,23 +838,41 @@ function proceedToTransferFromHero() {
     }
 }
 
-// Theme Toggle (Dark / Light Mode)
+// Theme Toggle (Dark / Light Mode with prefers-color-scheme support)
 function initTheme() {
-    const savedTheme = localStorage.getItem('paybridge_theme') || 'light';
-    const isDark = savedTheme === 'dark';
+    const savedTheme = localStorage.getItem('paybridge_theme');
+    let isDark = false;
+
+    if (savedTheme) {
+        isDark = savedTheme === 'dark';
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        isDark = true;
+    }
+
     if (isDark) {
         document.body.classList.add('dark-theme');
     } else {
         document.body.classList.remove('dark-theme');
     }
     updateThemeBtnUI(isDark);
+
+    // Watch OS system preference changes dynamically
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            if (!localStorage.getItem('paybridge_theme')) {
+                const prefersDark = e.matches;
+                document.body.classList.toggle('dark-theme', prefersDark);
+                updateThemeBtnUI(prefersDark);
+            }
+        });
+    }
 }
 
 function toggleTheme() {
     const isDark = document.body.classList.toggle('dark-theme');
     localStorage.setItem('paybridge_theme', isDark ? 'dark' : 'light');
     updateThemeBtnUI(isDark);
-    showToast(isDark ? '🌙 Mode Sombre activé' : '☀️ Mode Clair activé');
+    showToast(isDark ? '🌙 Mode Sombre activé' : '☀️ Mode Clair activé', 'info');
 }
 
 function updateThemeBtnUI(isDark) {
@@ -791,9 +886,33 @@ function updateThemeBtnUI(isDark) {
     }
 }
 
+// Register PWA Service Worker & Network Monitor
+function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(reg => {
+                    console.log('✅ PayBridge PWA Service Worker enregistré avec succès:', reg.scope);
+                })
+                .catch(err => {
+                    console.log('Service Worker non enregistré:', err);
+                });
+        });
+    }
+
+    // Network connectivity online / offline toasts
+    window.addEventListener('online', () => {
+        showToast('Connexion Internet rétablie. Vous êtes en ligne.', 'success');
+    });
+    window.addEventListener('offline', () => {
+        showToast('Mode hors ligne actif. Navigation restreinte au cache.', 'warning');
+    });
+}
+
 // Init
 document.addEventListener('DOMContentLoaded', async () => {
     initTheme();
+    registerServiceWorker();
     await checkSessionOnLoad();
     updateOperatorSelectors();
     recalculateFees();

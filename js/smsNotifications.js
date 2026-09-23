@@ -108,6 +108,9 @@ window.SMSNotifications = (function() {
                 <p class="sms-text">${escapeHtml(notif.text)}</p>
             </div>
             <div class="sms-toast-actions">
+                <button class="sms-act-btn btn-whatsapp" onclick="SMSNotifications.shareViaWhatsApp('${notif.id}')" title="Envoyer directement ce SMS via WhatsApp">
+                    <i class="fa-brands fa-whatsapp"></i> Envoyer WhatsApp
+                </button>
                 <button class="sms-act-btn btn-copy" onclick="SMSNotifications.copyText('${notif.id}')">
                     <i class="fa-regular fa-copy"></i> Copier SMS
                 </button>
@@ -135,11 +138,38 @@ window.SMSNotifications = (function() {
         }
     }
 
+    function formatBeninPhoneForWhatsApp(rawPhone) {
+        if (!rawPhone) return '';
+        let cleaned = rawPhone.toString().replace(/[^0-9]/g, '');
+        if (cleaned.startsWith('00')) cleaned = cleaned.substring(2);
+        if (cleaned.length === 10 && cleaned.startsWith('01')) {
+            cleaned = '229' + cleaned;
+        } else if (cleaned.length === 8) {
+            cleaned = '22901' + cleaned;
+        } else if (!cleaned.startsWith('229') && cleaned.length <= 10) {
+            cleaned = '229' + cleaned;
+        }
+        return cleaned;
+    }
+
+    function shareViaWhatsApp(id) {
+        const notif = notifications.find(n => n.id === id);
+        if (!notif) return;
+        const phone = formatBeninPhoneForWhatsApp(notif.phone);
+        const encodedText = encodeURIComponent(notif.text);
+        const waUrl = phone ? `https://wa.me/${phone}?text=${encodedText}` : `https://api.whatsapp.com/send?text=${encodedText}`;
+        window.open(waUrl, '_blank');
+    }
+
     function copyText(id) {
         const notif = notifications.find(n => n.id === id);
         if (notif && navigator.clipboard) {
             navigator.clipboard.writeText(notif.text).then(() => {
-                alert('Copie réussie : Le texte du SMS a été copié dans le presse-papier.');
+                if (typeof showToast === 'function') {
+                    showToast('📋 Texte du SMS copié dans le presse-papier !', 'info');
+                } else {
+                    alert('Copie réussie : Le texte du SMS a été copié dans le presse-papier.');
+                }
             });
         }
     }
@@ -159,13 +189,13 @@ window.SMSNotifications = (function() {
     function toggleDrawer() {
         const drawer = document.getElementById('notif-drawer-modal');
         if (!drawer) return;
-        if (drawer.style.display === 'flex' || drawer.classList.contains('active')) {
-            drawer.style.display = 'none';
-            drawer.classList.remove('active');
-        } else {
-            drawer.style.display = 'flex';
+        const willOpen = !drawer.classList.contains('active');
+        drawer.style.display = ''; // Clear inline styles
+        if (willOpen) {
             drawer.classList.add('active');
             markAllAsRead();
+        } else {
+            drawer.classList.remove('active');
         }
     }
 
@@ -202,7 +232,12 @@ window.SMSNotifications = (function() {
                 <p class="drawer-sms-content">${escapeHtml(n.text)}</p>
                 <div class="drawer-sms-footer">
                     <span class="drawer-phone-tag"><i class="fa-solid fa-phone"></i> ${escapeHtml(n.phone)}</span>
-                    <button class="sms-act-btn btn-copy" onclick="SMSNotifications.copyText('${n.id}')">Copier</button>
+                    <div style="display:flex; gap:0.4rem; align-items:center;">
+                        <button class="sms-act-btn btn-whatsapp" onclick="SMSNotifications.shareViaWhatsApp('${n.id}')" title="WhatsApp">
+                            <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                        </button>
+                        <button class="sms-act-btn btn-copy" onclick="SMSNotifications.copyText('${n.id}')">Copier</button>
+                    </div>
                 </div>
             </div>
         `).join('');
@@ -217,6 +252,7 @@ window.SMSNotifications = (function() {
         triggerSmsPush,
         closeToast,
         copyText,
+        shareViaWhatsApp,
         toggleDrawer,
         renderDrawerList
     };

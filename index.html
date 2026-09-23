@@ -5,7 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PayBridge Bénin - Transferts Inter-Réseaux Simplifiés</title>
     <meta name="description" content="Envoyez de l'argent instantanément entre MTN Mobile Money, Moov Money, Celtiis Cash et Wave au Bénin.">
-    
+    <!-- PWA & Mobile Web App Meta -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563EB">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PayBridge">
+    <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1343,6 +1351,7 @@
             </div>
 
             <div class="receipt-modal-actions">
+                <button class="btn-rec-whatsapp" onclick="shareCurrentReceiptWhatsApp()"><i class="fa-brands fa-whatsapp"></i> Envoyer WhatsApp</button>
                 <button class="btn-rec-action" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimer Reçu</button>
                 <button class="btn-rec-primary" onclick="closeReceiptModal()"><i class="fa-solid fa-check"></i> Terminer</button>
             </div>

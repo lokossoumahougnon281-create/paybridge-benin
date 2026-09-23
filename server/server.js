@@ -1,8 +1,27 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const cors = require('cors');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
+
+// Load environment variables from .env if present
+const envPath = path.join(__dirname, '../.env');
+if (fs.existsSync(envPath)) {
+    try {
+        const envContent = fs.readFileSync(envPath, 'utf8');
+        envContent.split('\n').forEach(line => {
+            const trimmed = line.trim();
+            if (trimmed && !trimmed.startsWith('#')) {
+                const [k, ...v] = trimmed.split('=');
+                if (k && !process.env[k.trim()]) {
+                    process.env[k.trim()] = v.join('=').trim().replace(/^["']|["']$/g, '');
+                }
+            }
+        });
+    } catch (e) {}
+}
+
 const db = require('./config/database');
 
 const authRoutes = require('./routes/authRoutes');
@@ -55,4 +74,8 @@ app.use((req, res) => {
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Serveur PayBridge Bénin démarré sur port ${PORT}`);
     console.log(`🔒 Sécurité activée : Bcrypt + JWT Cookies + SQLite DB + Rate Limiter.`);
+    const smsStatus = process.env.TERMII_API_KEY 
+        ? 'Termii (Afrique de l\'Ouest - Actif)' 
+        : (process.env.TWILIO_AUTH_TOKEN ? 'Twilio (Actif)' : 'Sandbox / Simulation (Prêt pour Termii/Twilio)');
+    console.log(`📱 Passerelle SMS : ${smsStatus}`);
 });

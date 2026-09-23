@@ -5,14 +5,18 @@
 :root {
     --bg-page: #F4F6F9;
     --bg-card: #FFFFFF;
+    --bg-card-subtle: #F8FAFC;
     --text-primary: #1E293B;
     --text-secondary: #64748B;
     --border-light: #E2E8F0;
+    --border-subtle: #CBD5E1;
+    --input-bg: #FFFFFF;
     
     --primary-blue: #2563EB;
     --primary-hover: #1D4ED8;
     --success-green: #10B981;
     --warning-amber: #F59E0B;
+    --danger-red: #EF4444;
     
     --radius-sm: 8px;
     --radius-md: 14px;
@@ -21,16 +25,29 @@
     
     --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.03);
     --shadow-hover: 0 12px 30px -4px rgba(0, 0, 0, 0.1);
+    --modal-backdrop: rgba(15, 23, 42, 0.65);
 }
 
-/* Reset */
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* Reset & Accessibility Defaults */
+*, *::before, *::after { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+}
+
+:focus-visible {
+    outline: 2px solid var(--primary-blue);
+    outline-offset: 2px;
+}
+
 body {
     font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
     background-color: var(--bg-page);
     color: var(--text-primary);
     line-height: 1.5;
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Header & Navbar */
@@ -529,38 +546,48 @@ body {
 }
 
 .amount-entry input {
-    font-size: 2rem;
+    font-size: clamp(1.4rem, 4vw, 2.2rem);
     font-weight: 800;
     color: var(--primary-blue);
     background: transparent;
     border: none;
     outline: none;
     text-align: center;
-    width: 200px;
+    width: 100%;
+    max-width: 14rem;
+    min-width: 100px;
+    padding: 0.2rem 0.5rem;
 }
 
 .unit-tag { font-size: 1.1rem; font-weight: 800; color: var(--text-secondary); }
 
 .chips-row {
     display: flex;
-    gap: 0.4rem;
+    gap: 0.5rem;
     justify-content: center;
+    flex-wrap: wrap;
     margin-bottom: 1.2rem;
 }
 
 .chip-btn {
     background: #F1F5F9;
-    border: none;
-    padding: 5px 12px;
+    border: 1px solid var(--border-light);
+    padding: 8px 14px;
+    min-height: 44px;
+    min-width: 68px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     border-radius: var(--radius-full);
-    font-size: 0.78rem;
+    font-size: 0.85rem;
     font-weight: 700;
     color: var(--text-primary);
     cursor: pointer;
-    transition: all 0.2s ease;
+    touch-action: manipulation;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.chip-btn:hover { background: var(--primary-blue); color: white; }
+.chip-btn:hover { background: var(--primary-blue); color: white; border-color: var(--primary-blue); }
 
 /* Fee Summary Box */
 .fee-summary-box {
@@ -1522,17 +1549,23 @@ body {
    MODE SOMBRE (DARK THEME STYLING)
    ========================================================================== */
 body.dark-theme {
+    --bg-page: #0B1120;
+    --bg-card: #1E293B;
+    --bg-card-subtle: #131D31;
     --bg-main: #0B1120;
     --card-bg: #1E293B;
     --text-primary: #F8FAFC;
     --text-secondary: #94A3B8;
     --border-light: #334155;
+    --border-subtle: #475569;
+    --input-bg: #0F172A;
     background-color: #0B1120;
     color: #F8FAFC;
 }
 
+body.dark-theme .navbar,
 body.dark-theme .header-navbar {
-    background: rgba(15, 23, 42, 0.95);
+    background: #0F172A;
     border-bottom-color: #334155;
 }
 
@@ -2325,6 +2358,175 @@ html, body {
     .toast {
         font-size: 0.8rem !important;
         padding: 0.65rem 0.9rem !important;
+    }
+}
+
+/* ==========================================================================
+   7. FLUID MICRO-ANIMATIONS & INTERACTION POLISH
+   ========================================================================== */
+
+/* Enhanced Modal Animations */
+.modal, .modal-overlay {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), backdrop-filter 0.25s ease;
+    backdrop-filter: blur(8px);
+}
+
+.modal.active, .modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-content,
+.auth-modal-card,
+.modal-card,
+.receipt-card-modal {
+    transform: scale(0.94) translateY(14px);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+}
+
+.modal.active .modal-content,
+.modal.active .auth-modal-card,
+.modal.active .modal-card,
+.modal.active .receipt-card-modal,
+.modal-overlay.active .modal-content,
+.modal-overlay.active .auth-modal-card,
+.modal-overlay.active .modal-card {
+    transform: scale(1) translateY(0);
+}
+
+/* Dynamic Balance Pulse Effect */
+@keyframes balancePulseAnim {
+    0% { transform: scale(1); filter: brightness(1); }
+    40% { transform: scale(1.08); filter: brightness(1.25); color: #10B981; }
+    100% { transform: scale(1); filter: brightness(1); }
+}
+
+.balance-pulse {
+    display: inline-block;
+    animation: balancePulseAnim 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Tactile Accessibility Area for all Interactive Controls (>= 44px) */
+.nav-link,
+.btn-auth-action,
+.btn-theme-toggle,
+.nav-notif-btn,
+.btn-main-action,
+.btn-submit-transfer,
+.btn-swap-hero,
+.btn-swap-networks,
+.calc-tab-btn,
+.op-select-card,
+.net-btn,
+.select-operator,
+.input-phone,
+.input-amount,
+.auth-input-wrapper input {
+    min-height: 44px;
+    touch-action: manipulation;
+}
+
+.btn-logout-icon,
+.modal-close-btn,
+.sms-close-btn {
+    min-width: 44px;
+    min-height: 44px;
+}
+
+/* ==========================================================================
+   8. COMPREHENSIVE MULTI-DEVICE BREAKPOINTS
+   ========================================================================== */
+
+/* A. Ultra-compact Mobiles (< 360px, e.g. iPhone SE 1st gen, Galaxy A01, small KaiOS) */
+@media (max-width: 359px) {
+    .nav-brand .brand-name {
+        font-size: 1.1rem !important;
+    }
+    .brand-sub {
+        display: none !important;
+    }
+    .operator-selector-grid,
+    .network-selector-grid,
+    .op-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.35rem !important;
+    }
+    .taptap-calc-card,
+    .card-transfer {
+        padding: 0.85rem 0.65rem !important;
+    }
+    .amount-entry input {
+        font-size: 1.4rem !important;
+    }
+    .chips-row {
+        gap: 0.3rem !important;
+    }
+    .chip-btn {
+        min-width: 54px !important;
+        padding: 6px 10px !important;
+        font-size: 0.75rem !important;
+    }
+    .hero-title,
+    .hero-banner h1 {
+        font-size: 1.45rem !important;
+    }
+}
+
+/* B. Compact & Standard Smartphones (360px - 480px) */
+@media (min-width: 360px) and (max-width: 480px) {
+    .operator-selector-grid,
+    .network-selector-grid,
+    .op-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.45rem !important;
+    }
+    .amount-entry input {
+        font-size: 1.65rem !important;
+    }
+}
+
+/* C. Tablets & Phablets (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+    .operator-selector-grid,
+    .network-selector-grid,
+    .op-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 0.6rem !important;
+    }
+    .taptap-hero-wrapper {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* D. Laptops & Small Desktops (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .nav-container {
+        padding: 0.8rem 1.2rem;
+    }
+    .transfer-main-layout {
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 1.5rem;
+    }
+}
+
+/* E. Large Screens & 4K Displays (> 1440px) */
+@media (min-width: 1441px) {
+    .container,
+    .nav-container,
+    .taptap-hero-wrapper,
+    .container-page {
+        max-width: 1380px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+    .taptap-hero-content .hero-title {
+        font-size: 3rem !important;
+        line-height: 1.2 !important;
+    }
+    .taptap-calc-card {
+        padding: 2.2rem 2.4rem !important;
     }
 }
 
